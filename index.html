@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>戰狼量化戰情室 | War Wolf Quant Dashboard</title>
+    <title>War Wolf Quant Dashboard</title>
     <!-- 引入 TradingView 圖表引擎 -->
     <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
     <style>
@@ -37,23 +37,23 @@
 
         <!-- 右翼：風控與備忘錄 -->
         <div class="panel">
-            <h2>⚖️ 剛性注碼計算機 (Position Sizer)</h2>
+            <h2>⚖️ Position Sizer</h2>
             <p style="font-size: 12px; color: #8a93a6;">利用 0.25R 限額推演絕對防禦股數。</p>
             
             <div class="input-group">
-                <label>最大風險預算 (Risk Budget - USD):</label>
+                <label>Risk Budget - USD:</label>
                 <input type="number" id="riskBudget" value="160" step="10">
             </div>
             <div class="input-group">
-                <label>觸發買入價 (Buy Stop Price):</label>
+                <label>Buy Stop Price:</label>
                 <input type="number" id="buyStop" placeholder="e.g., 37.60">
             </div>
             <div class="input-group">
-                <label>剛性止損線 (Stop Loss Price):</label>
+                <label>Stop Loss Price:</label>
                 <input type="number" id="stopLoss" placeholder="e.g., 33.50">
             </div>
             
-            <button onclick="calculatePosition()">計算極限股數 (Calculate)</button>
+            <button onclick="calculatePosition()">Calculate</button>
             
             <div class="result-box" id="resultDisplay">
                 等待數據輸入...
@@ -61,7 +61,7 @@
 
             <hr style="border-color: #2a2e39; margin: 20px 0;">
 
-            <h2>🚨 宏觀殺局備忘錄 (Alerts & Reminders)</h2>
+            <h2>🚨 Alerts & Reminders</h2>
             <ul>
                 <li class="alert">【天條】放棄盲目追高，只掛 Buy Stop 條件單！</li>
                 <li><strong>三巫日 (Triple Witching):</strong> 提防最後一小時 (Witching Hour) 極端洗盤。</li>
@@ -105,7 +105,7 @@
             const totalCost = (quantity * entry).toFixed(2);
 
             document.getElementById('resultDisplay').innerHTML = 
-                "✅ 極限買入數量: " + quantity + " 股<br>" +
+                "✅ 買入數量: " + quantity + " 股<br>" +
                 "<span style='font-size: 14px; color: #8a93a6;'>總持倉成本: $" + totalCost + " USD</span>";
         }
     </script>

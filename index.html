@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>戰狼量化戰情室 | War Wolf Quant Dashboard</title>
+    <!-- 引入 TradingView 圖表引擎 -->
+    <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+    <style>
+        body { background-color: #131722; color: #d1d4dc; font-family: -apple-system, BlinkMacSystemFont, sans-serif; padding: 20px; margin: 0; }
+        h1, h2 { color: #ffffff; border-bottom: 1px solid #2a2e39; padding-bottom: 10px; margin-top: 0; }
+        .grid-container { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+        .panel { background: #1e222d; padding: 20px; border-radius: 8px; border: 1px solid #2a2e39; }
+        .input-group { margin-bottom: 15px; }
+        label { display: block; margin-bottom: 5px; font-size: 14px; }
+        input { background: #131722; color: #ffffff; border: 1px solid #2a2e39; padding: 10px; border-radius: 4px; width: 90%; }
+        button { background: #2962ff; color: #ffffff; border: none; padding: 12px; cursor: pointer; border-radius: 4px; font-weight: bold; width: 100%; transition: 0.3s; }
+        button:hover { background: #1e53e5; }
+        .result-box { margin-top: 15px; padding: 15px; background: #2a2e39; border-radius: 4px; font-size: 18px; font-weight: bold; color: #089981; }
+        .alert { color: #f23645; font-weight: bold; }
+        ul { padding-left: 20px; line-height: 1.6; }
+        
+        /* 手機版響應式設定 */
+        @media (max-width: 768px) { .grid-container { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+    <h1>🐺 戰狼量化戰情室 (Quant Dashboard)</h1>
+
+    <div class="grid-container">
+        <!-- 左翼：實時動能圖表 -->
+        <div class="panel">
+            <h2>👁️ 大戶底牌直擊 (Live Chart)</h2>
+            <div id="tv_chart" style="height: 500px;"></div>
+        </div>
+
+        <!-- 右翼：風控與備忘錄 -->
+        <div class="panel">
+            <h2>⚖️ 剛性注碼計算機 (Position Sizer)</h2>
+            <p style="font-size: 12px; color: #8a93a6;">利用 0.25R 限額推演絕對防禦股數。</p>
+            
+            <div class="input-group">
+                <label>最大風險預算 (Risk Budget - USD):</label>
+                <input type="number" id="riskBudget" value="160" step="10">
+            </div>
+            <div class="input-group">
+                <label>觸發買入價 (Buy Stop Price):</label>
+                <input type="number" id="buyStop" placeholder="e.g., 37.60">
+            </div>
+            <div class="input-group">
+                <label>剛性止損線 (Stop Loss Price):</label>
+                <input type="number" id="stopLoss" placeholder="e.g., 33.50">
+            </div>
+            
+            <button onclick="calculatePosition()">計算極限股數 (Calculate)</button>
+            
+            <div class="result-box" id="resultDisplay">
+                等待數據輸入...
+            </div>
+
+            <hr style="border-color: #2a2e39; margin: 20px 0;">
+
+            <h2>🚨 宏觀殺局備忘錄 (Alerts & Reminders)</h2>
+            <ul>
+                <li class="alert">【天條】放棄盲目追高，只掛 Buy Stop 條件單！</li>
+                <li><strong>三巫日 (Triple Witching):</strong> 提防最後一小時 (Witching Hour) 極端洗盤。</li>
+                <li><strong>期權 0DTE 警告:</strong> Theta 加速崩塌，若高位橫盤超過 15 分鐘，立即打撈殘值套現。</li>
+                <li><strong>動態防線:</strong> 贏利一旦拉開，手動上移 Stop Loss (e.g., SPCX 鎖定成本價)。</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- 啟動圖表與計算機邏輯 -->
+    <script>
+        // 渲染 TradingView 實時圖表
+        new TradingView.widget({
+            "autosize": true,
+            "symbol": "NASDAQ:NVDA", // 預設顯示 NVDA，可隨時更改為 WYFI, FTAI 等
+            "interval": "5",         // 預設 5 分鐘圖
+            "timezone": "Asia/Hong_Kong",
+            "theme": "dark",
+            "style": "1",            // 蠟燭圖
+            "locale": "en",
+            "enable_publishing": false,
+            "hide_top_toolbar": false,
+            "hide_legend": false,
+            "save_image": false,
+            "container_id": "tv_chart"
+        });
+
+        // 剛性風控計算邏輯
+        function calculatePosition() {
+            const risk = parseFloat(document.getElementById('riskBudget').value);
+            const entry = parseFloat(document.getElementById('buyStop').value);
+            const stop = parseFloat(document.getElementById('stopLoss').value);
+
+            if (!risk || !entry || !stop || entry <= stop) {
+                document.getElementById('resultDisplay').innerHTML = "<span class='alert'>錯誤：買入價必須大於止損價！</span>";
+                return;
+            }
+
+            const riskPerShare = entry - stop;
+            const quantity = Math.floor(risk / riskPerShare);
+            const totalCost = (quantity * entry).toFixed(2);
+
+            document.getElementById('resultDisplay').innerHTML = 
+                "✅ 極限買入數量: " + quantity + " 股<br>" +
+                "<span style='font-size: 14px; color: #8a93a6;'>總持倉成本: $" + totalCost + " USD</span>";
+        }
+    </script>
+</body>
+</html>
